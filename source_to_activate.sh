@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# set -e
-
 THIS_SCRIPT_DIR=$(dirname $0)
 
 # Prepand the .venv/bin directory to the PATH environment variable if it is not already there
@@ -14,3 +12,5 @@ fi
 
 echo "Python interpreter: $(realpath $(which python))"
 echo "Python version: $(python --version)"
+echo "Git user: $(git config user.name)"
+echo "Git email: $(git config user.email)"

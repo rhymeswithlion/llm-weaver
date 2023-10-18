@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# set -e
 THIS_SCRIPT_DIR=$(dirname $0)
 
 # Remove the .venv/bin directory from the PATH environment variable if it is there
@@ -13,3 +12,5 @@ fi
 
 echo "Python interpreter: $(which python)"
 echo "Python version: $(python --version)"
+echo "Git user: $(git config user.name)"
+echo "Git email: $(git config user.email)"
