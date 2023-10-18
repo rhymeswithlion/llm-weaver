@@ -6,8 +6,8 @@ The best way to use this:
 
 - Open the workspace file (`2023-fall-cs-194-294-merging-llms.code-workspace`) in Visual Studio Code
 - Run the following in the terminal:
-  - brew install miniconda # Install the conda command line tool
-  - make dev-setup # Set up the virtual environment in .venv
+  - `brew install miniconda # Install the conda command line tool`
+  - `make dev-setup # Set up the virtual environment in .venv`
 - Install the needed Visual Studio Code extensions (Hint: choose "Extensions: Show Recommended Extensions" from the Command Palette, Cmd+Shift+P)):
   - Python
   - Jupyter
