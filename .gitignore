@@ -1,0 +1,10 @@
+# Python files to ignore
+__pycache__/
+*.py[cod]
+
+# Mac files to ignore
+.DS_Store
+
+# Temp files
+/.venv
+/tmp

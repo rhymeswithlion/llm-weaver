@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-vscode.makefile-tools",
+    "github.copilot",
+    "ms-python.python",
+    "ms-toolsai.jupyter"
+  ]
+}
