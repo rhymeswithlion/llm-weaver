@@ -1,2 +1,2 @@
-git-re-basin:
-	git clone https://github.com/samuela/git-re-basin.git
+model_merging:
+	git clone https://github.com/mmatena/model_merging.git
