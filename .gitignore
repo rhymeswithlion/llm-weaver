@@ -8,3 +8,7 @@ __pycache__/
 # Temp files
 /.venv
 /tmp
+
+
+gpt2-finetuned-mnli/
+gpt2-finetuned-rte/
