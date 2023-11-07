@@ -12,3 +12,5 @@ __pycache__/
 
 gpt2-finetuned-mnli/
 gpt2-finetuned-rte/
+
+/model_merging/fisher*

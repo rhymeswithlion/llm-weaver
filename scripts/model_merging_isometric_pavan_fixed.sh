@@ -18,9 +18,15 @@ cd $THIS_DIR/../model_merging
 export PYTHONPATH=.
 
 EVAL_TASK=rte
-RTE_MODEL=textattack/roberta-base-RTE
-MNLI_MODEL=textattack/roberta-base-MNLI
+# RTE_MODEL=textattack/roberta-base-RTE
+# MNLI_MODEL=textattack/roberta-base-MNLI
 
+RTE_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-rte
+MNLI_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-mnli
+
+# This still has null for the pad token
+# RTE_MODEL=PavanNeerudu/gpt2-finetuned-rte
+# MNLI_MODEL=PavanNeerudu/gpt2-finetuned-mnli
 
 # Isometric merge.
 PYTHONPATH=. python3 ./scripts/merge_and_evaluate.py  \

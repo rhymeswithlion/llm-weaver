@@ -22,14 +22,14 @@ export PYTHONPATH=.
 
 EVAL_TASK=rte
 # original
-RTE_MODEL=textattack/roberta-base-RTE
-MNLI_MODEL=textattack/roberta-base-MNLI
-FISHER_DIR=./fisher_coeffs_roberta_rte_mnli
+# RTE_MODEL=textattack/roberta-base-RTE
+# MNLI_MODEL=textattack/roberta-base-MNLI
+# FISHER_DIR=./fisher_coeffs_roberta_rte_mnli
 
 # doesn't work. no tokenizer pad token
-RTE_MODEL=PavanNeerudu/gpt2-finetuned-rte
-MNLI_MODEL=PavanNeerudu/gpt2-finetuned-mnli
-FISHER_DIR=./fisher_coeffs_pavan_gpt2_rte_mnli
+# RTE_MODEL=PavanNeerudu/gpt2-finetuned-rte
+# MNLI_MODEL=PavanNeerudu/gpt2-finetuned-mnli
+# FISHER_DIR=./fisher_coeffs_pavan_gpt2_rte_mnli
 
 RTE_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-rte
 MNLI_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-mnli
