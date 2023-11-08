@@ -1,18 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
-
-# Start at the repo root
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $THIS_DIR/..
-pwd
-
-# Activate virtual environment
-source source_to_activate.sh
-
-# Install dependencies
-pip install -q absl-py tensorflow tensorflow_datasets tensorflow_probability
-
+# Import common things
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $SCRIPTS_DIR/common.sh
+cd $SCRIPTS_DIR/../model_merging
 
 #######################
 # Run the fischer model merging as shown in ./model_merging/README.md
