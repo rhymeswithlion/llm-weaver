@@ -90,13 +90,17 @@ def _convert_dataset_to_features(
     def pad_fn(input_ids, token_type_ids, label):
         # Zero-pad up to the sequence length.
         padding_length = max_length - tf.shape(input_ids)[-1]
-        try:
-            input_ids = tf.concat(
-                [input_ids, pad_token * tf.ones(padding_length, dtype=tf.int32)], axis=-1
-            )
-        except ValueError:
-            raise 
 
+        input_ids = tf.concat(
+            [input_ids, pad_token * tf.ones(padding_length, dtype=tf.int32)], axis=-1
+        )
+        token_type_ids = tf.concat(
+            [
+                token_type_ids,
+                pad_token_segment_id * tf.ones(padding_length, dtype=tf.int32),
+            ],
+            axis=-1,
+        )
 
         tf_example = {
             # Ensure the shape is known as this is often needed for downstream steps.
