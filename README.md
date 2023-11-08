@@ -2,6 +2,17 @@
 
 To see if your system is working
 
+First, clean up any previous virtualenvs in .venv
+
+```
+$ make clean
+=========================
+ * Cleaning up
+rm -rf .venv
+```
+
+Now create a new virtualenv and run the script `model_merging_isometric_fast.sh`
+
 ```
 $ make .venv run-isometric-test
 
@@ -23,12 +34,4 @@ Verifying transaction: done
 Executing transaction: done
 Installing pip dependencies: / 
 
-```
-If you want to delete the virtualenv run:
-
-```
-$ make clean
-=========================
- * Cleaning up
-rm -rf .venv
 ```
