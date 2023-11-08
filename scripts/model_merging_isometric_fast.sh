@@ -3,11 +3,10 @@
 # Import common things
 SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $SCRIPTS_DIR/common.sh
+cd $SCRIPTS_DIR/../model_merging
 
 #######################
 # Run the isometric model merging as shown in ./model_merging/README.md
-
-cd $SCRIPTS_DIR/../model_merging
 
 EVAL_TASK=rte
 RTE_MODEL=textattack/roberta-base-RTE
