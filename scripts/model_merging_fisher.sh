@@ -13,25 +13,10 @@ RTE_MODEL=textattack/roberta-base-RTE
 MNLI_MODEL=textattack/roberta-base-MNLI
 FISHER_DIR=./fisher_coeffs_roberta_rte_mnli
 
-# doesn't work. no tokenizer pad token
-RTE_MODEL=PavanNeerudu/gpt2-finetuned-rte
-MNLI_MODEL=PavanNeerudu/gpt2-finetuned-mnli
-FISHER_DIR=./fisher_coeffs_pavan_gpt2_rte_mnli
-
-RTE_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-rte
-MNLI_MODEL=~/ucb-devenv/2023-fall-cs-294-merging-llms/gpt2-finetuned-mnli
-FISHER_DIR=./fisher_coeffs_pavan_gpt2_rte_mnli
-
-
-
-RTE_MODEL=George-Ogden/gpt2-finetuned-mnli
-MNLI_MODEL=George-Ogden/gpt2-finetuned-mnli
-FISHER_DIR=./fisher_coeffs_ogden_gpt2_rte_mnli
 
 mkdir -p $FISHER_DIR
 
 
-# Compute RTE Fisher.
 python3 ./scripts/compute_fisher.py  \
     --model=$RTE_MODEL \
     --glue_task="rte" \
