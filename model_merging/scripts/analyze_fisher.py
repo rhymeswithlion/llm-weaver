@@ -41,7 +41,7 @@ def print_fishers(fisher_mat):
     results = np.zeros((12, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
 
     # Calculate the sum and average for each of the 12 layers
-    for i in range(12):
+    for i in range(len(fisher_mat) // 16):
         layer_matrices = fisher_mat[i * 16:(i + 1) * 16]  # Get the matrices for each layer
         layer_sum = sum(np.sum(matrix.numpy()) for matrix in layer_matrices)
         layer_avg = layer_sum / sum(matrix.numpy().size for matrix in layer_matrices)
