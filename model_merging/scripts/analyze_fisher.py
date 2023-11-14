@@ -1,0 +1,95 @@
+# Austin's script to load in the Fisher information data and group it by layer.
+
+import os
+import sys
+import numpy as np
+
+cwd = os.getcwd()
+cwd = '/Users/austinzane/PycharmProjects/2023-fall-cs-194-294-merging-llms/model_merging' # Comment out when running on command line
+os.chdir(cwd)
+sys.path.append(cwd)
+
+from scripts.merge_and_evaluate import load_fishers
+from model_merging import hdf5_util
+from model_merging import hf_util
+from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
+
+def load_models_v2():
+    models = []
+    for i, model_str in [[0, 'textattack/roberta-base-RTE']]:
+        model_str = os.path.expanduser(model_str)
+        model = TFAutoModelForSequenceClassification.from_pretrained(
+            model_str, from_pt=True
+        )
+        models.append(model)
+        if i == 0:
+            tokenizer = AutoTokenizer.from_pretrained(model_str)
+    return models, tokenizer
+
+def load_fishers_v2(fisher_dirs=['./fisher_coefficients/rte_fisher.h5']):
+    fishers = []
+    for fisher_str in fisher_dirs:
+        fisher_str = os.path.expanduser(fisher_str)
+        fisher = hdf5_util.load_variables_from_hdf5(fisher_str, trainable=False)
+        fishers.append(fisher)
+    return fishers
+
+
+# There are 197 weight matrices in the model. The first 192 are the weights of the 12 layers of the model.
+# The next 5 are the weights of embeddings.
+f_i_mat = load_fishers_v2()[0]
+
+# Get the trained model and tokenizer
+rte_model, rte_tokenizer = load_models_v2()
+
+# Only one model for now
+rte_model = rte_model[0]
+
+# The model has the main RoBERTa model and a task-specific classifier on top of it.
+rte_model_roberta = rte_model.roberta
+
+# The RoBERTa model has embeddings, an encoder, and a pooler. We are interested in the encoder for now.
+rte_model_roberta_encoder = rte_model_roberta.encoder
+
+# The encoder has 12 layers. Each layer has a self-attention layer and a feed-forward layer.
+# There are 16 trainable weights per layer.
+for i in range(16):
+    print(rte_model_roberta_encoder.trainable_weights[i].name)
+
+# Corresponding fisher information
+for i in range(16):
+    print(f_i_mat[i].shape)
+
+
+# Initialize an array to store the results
+results = np.zeros((12, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
+
+# Calculate the sum and average for each of the 12 layers
+for i in range(12):
+    layer_matrices = f_i_mat[i*16:(i+1)*16]  # Get the matrices for each layer
+    layer_sum = sum(np.sum(matrix.numpy()) for matrix in layer_matrices)
+    layer_avg = layer_sum / sum(matrix.numpy().size for matrix in layer_matrices)
+
+    results[i, 0] = layer_avg
+    results[i, 1] = layer_sum
+
+# Calculate the total sum
+total_sum = np.sum(results[:, 1])
+
+# Calculate the proportion of the total for each layer
+results[:, 2] = results[:, 1] / total_sum
+
+# Print the results
+print('Percent of total Fisher information for each layer:')
+for i in range(12):
+    print(f'Layer {i+1}: {results[i, 2]*100:.2f}%')
+
+print('Total Fisher information for each layer:')
+for i in range(12):
+    print(f'Layer {i+1}: {results[i, 1]:.2f}')
+
+
+# These are the embedding weights
+for i in range(193, 197):
+    print(rte_model_roberta.trainable_weights[i].name)
+
