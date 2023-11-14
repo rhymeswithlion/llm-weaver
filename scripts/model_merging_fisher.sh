@@ -1,32 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
-
-# Start at the repo root
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $THIS_DIR/..
-pwd
-
-# Activate virtual environment
-source source_to_activate.sh
-
-# Install dependencies
-pip install absl-py tensorflow tensorflow_datasets tensorflow_probability
-
+# Import common things
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $SCRIPTS_DIR/common.sh
+cd $SCRIPTS_DIR/../model_merging
 
 #######################
-# Run the fischer model merging as shown in ./model_merging/README.md
-
-cd $THIS_DIR/../model_merging
-export PYTHONPATH=.
-mkdir -p fisher_coefficients
 
 EVAL_TASK=rte
+# original
 RTE_MODEL=textattack/roberta-base-RTE
 MNLI_MODEL=textattack/roberta-base-MNLI
-FISHER_DIR=./fisher_coefficients
+FISHER_DIR=./fisher_coeffs_roberta_rte_mnli
 
-# Compute RTE Fisher.
+
+mkdir -p $FISHER_DIR
+
+
 python3 ./scripts/compute_fisher.py  \
     --model=$RTE_MODEL \
     --glue_task="rte" \

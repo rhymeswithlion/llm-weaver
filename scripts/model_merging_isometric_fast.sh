@@ -14,4 +14,5 @@ MNLI_MODEL=textattack/roberta-base-MNLI
 # Isometric merge.
 python3 ./scripts/merge_and_evaluate.py  \
     --models=$RTE_MODEL,$MNLI_MODEL \
-    --glue_task=$EVAL_TASK
+    --glue_task=$EVAL_TASK \
+    --n_examples=100
