@@ -11,12 +11,13 @@ cd $SCRIPTS_DIR/../model_merging
 EVAL_TASK=rte
 
 # Using PavanNeerudu/gpt2-finetuned-mnli doesn't work b/c of tokenizer issues
-# RTE_MODEL=PavanNeerudu/gpt2-finetuned-mnli
+# RTE_MODEL=PavanNeerudu/gpt2-finetuned-rte
 # MNLI_MODEL=PavanNeerudu/gpt2-finetuned-mnli
 
 # We need to fix the tokenizer issues locally to get this to work
-# RTE_MODEL=./gpt2-finetuned-rte
-# MNLI_MODEL=./gpt2-finetuned-mnli
+# Relative to the model_merging directory
+RTE_MODEL=../data/gpt2-finetuned-rte-fixed
+MNLI_MODEL=../data/gpt2-finetuned-mnli-fixed
 
 # Isometric merge.
 python3 ./scripts/merge_and_evaluate.py  \

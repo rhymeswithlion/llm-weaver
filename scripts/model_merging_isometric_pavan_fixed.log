@@ -1,0 +1,39 @@
+Using Python from /Users/briancruz/2023-fall-cs-194-294-merging-llms/scripts/../.venv/bin/python
+model_merging package found: /Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/__init__.py
+Some weights of the PyTorch model were not used when initializing the TF 2.0 model TFGPT2ForSequenceClassification: ['transformer.h.8.attn.masked_bias', 'transformer.h.11.attn.masked_bias', 'transformer.h.10.attn.masked_bias', 'transformer.h.2.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.9.attn.masked_bias', 'transformer.h.0.attn.masked_bias', 'transformer.h.7.attn.masked_bias', 'transformer.h.1.attn.masked_bias', 'transformer.h.5.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.6.attn.masked_bias']
+- This IS expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model trained on another task or with another architecture (e.g. initializing a TFBertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model that you expect to be exactly identical (e.g. initializing a TFBertForSequenceClassification model from a BertForSequenceClassification model).
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+Some weights of the PyTorch model were not used when initializing the TF 2.0 model TFGPT2ForSequenceClassification: ['transformer.h.8.attn.masked_bias', 'transformer.h.11.attn.masked_bias', 'transformer.h.10.attn.masked_bias', 'transformer.h.2.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.9.attn.masked_bias', 'transformer.h.0.attn.masked_bias', 'transformer.h.7.attn.masked_bias', 'transformer.h.1.attn.masked_bias', 'transformer.h.5.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.6.attn.masked_bias']
+- This IS expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model trained on another task or with another architecture (e.g. initializing a TFBertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model that you expect to be exactly identical (e.g. initializing a TFBertForSequenceClassification model from a BertForSequenceClassification model).
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+I1114 13:46:14.314090 8426020992 dataset_info.py:578] Load dataset info from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+I1114 13:46:14.315809 8426020992 dataset_builder.py:528] Reusing dataset glue (/Users/briancruz/tensorflow_datasets/glue/rte/2.0.0)
+I1114 13:46:14.340533 8426020992 logging_logger.py:49] Constructing tf.data.Dataset glue for split validation, from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:520: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
+  warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/evaluation.py:7: FutureWarning: load_metric is deprecated and will be removed in the next major version of datasets. Use 'evaluate.load' instead, from the new library 🤗 Evaluate: https://huggingface.co/docs/evaluate
+  return hfds.load_metric("glue", task)
+Traceback (most recent call last):
+  File "./scripts/merge_and_evaluate.py", line 117, in <module>
+    app.run(main)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/absl/app.py", line 308, in run
+    _run_main(main, args)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/absl/app.py", line 254, in _run_main
+    sys.exit(main(argv))
+  File "./scripts/merge_and_evaluate.py", line 98, in main
+    results = merging.merging_coefficients_search(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/merging.py", line 137, in merging_coefficients_search
+    for coeffs, merged_model in merged_models:
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/merging.py", line 105, in generate_merged_for_coeffs_set
+    _merge_with_coeffs(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/merging.py", line 69, in _merge_with_coeffs
+    rhs = tf.reduce_sum(rhs, axis=0)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/framework/ops.py", line 6656, in raise_from_not_ok_status
+    raise core._status_to_exception(e) from None  # pylint: disable=protected-access
+tensorflow.python.framework.errors_impl.InvalidArgumentError: {{function_node __wrapped__Pack_N_2_device_/job:localhost/replica:0/task:0/device:CPU:0}} Shapes of all inputs must match: values[0].shape = [768,2] != values[1].shape = [768,3] [Op:Pack] name: packed
