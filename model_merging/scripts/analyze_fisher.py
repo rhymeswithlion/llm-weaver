@@ -14,9 +14,10 @@ from model_merging import hdf5_util
 from model_merging import hf_util
 from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
 
-def load_models_v2():
+
+def load_models_v2(model_strs=['textattack/roberta-base-RTE']):
     models = []
-    for i, model_str in [[0, 'textattack/roberta-base-RTE']]:
+    for i, model_str in model_strs:
         model_str = os.path.expanduser(model_str)
         model = TFAutoModelForSequenceClassification.from_pretrained(
             model_str, from_pt=True
@@ -35,9 +36,38 @@ def load_fishers_v2(fisher_dirs=['./fisher_coefficients/rte_fisher.h5']):
     return fishers
 
 
+def print_fishers(fisher_mat):
+    # Initialize an array to store the results
+    results = np.zeros((12, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
+
+    # Calculate the sum and average for each of the 12 layers
+    for i in range(12):
+        layer_matrices = fisher_mat[i * 16:(i + 1) * 16]  # Get the matrices for each layer
+        layer_sum = sum(np.sum(matrix.numpy()) for matrix in layer_matrices)
+        layer_avg = layer_sum / sum(matrix.numpy().size for matrix in layer_matrices)
+
+        results[i, 0] = layer_avg
+        results[i, 1] = layer_sum
+
+    # Calculate the total sum
+    total_sum = np.sum(results[:, 1])
+
+    # Calculate the proportion of the total for each layer
+    results[:, 2] = results[:, 1] / total_sum
+
+    # Print the results
+    print('Percent of total Fisher information for each layer:')
+    for i in range(12):
+        print(f'Layer {i + 1}: {results[i, 2] * 100:.2f}%')
+
+    print('Total Fisher information for each layer:')
+    for i in range(12):
+        print(f'Layer {i + 1}: {results[i, 1]:.2f}')
+
+
 # There are 197 weight matrices in the model. The first 192 are the weights of the 12 layers of the model.
 # The next 5 are the weights of embeddings.
-f_i_mat = load_fishers_v2()[0]
+rte_fisher, mnli_fisher = load_fishers_v2(['./fisher_coefficients/rte_fisher.h5', './fisher_coefficients/mnli_fisher.h5'])
 
 # Get the trained model and tokenizer
 rte_model, rte_tokenizer = load_models_v2()
@@ -58,38 +88,15 @@ for i in range(16):
 
 # Corresponding fisher information
 for i in range(16):
-    print(f_i_mat[i].shape)
+    print(rte_fisher[i].name)
 
-
-# Initialize an array to store the results
-results = np.zeros((12, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
-
-# Calculate the sum and average for each of the 12 layers
-for i in range(12):
-    layer_matrices = f_i_mat[i*16:(i+1)*16]  # Get the matrices for each layer
-    layer_sum = sum(np.sum(matrix.numpy()) for matrix in layer_matrices)
-    layer_avg = layer_sum / sum(matrix.numpy().size for matrix in layer_matrices)
-
-    results[i, 0] = layer_avg
-    results[i, 1] = layer_sum
-
-# Calculate the total sum
-total_sum = np.sum(results[:, 1])
-
-# Calculate the proportion of the total for each layer
-results[:, 2] = results[:, 1] / total_sum
-
-# Print the results
-print('Percent of total Fisher information for each layer:')
-for i in range(12):
-    print(f'Layer {i+1}: {results[i, 2]*100:.2f}%')
-
-print('Total Fisher information for each layer:')
-for i in range(12):
-    print(f'Layer {i+1}: {results[i, 1]:.2f}')
-
+print_fishers(rte_fisher)
+print_fishers(mnli_fisher)
 
 # These are the embedding weights
 for i in range(193, 197):
     print(rte_model_roberta.trainable_weights[i].name)
 
+
+# Next, use roberta-large-mnli from huggingface.co/roberta-large-mnli
+# or roberta-large-rte from huggingface.co/howey/roberta-large-rte
