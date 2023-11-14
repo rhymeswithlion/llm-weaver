@@ -1,0 +1,205 @@
+Using Python from /Users/briancruz/2023-fall-cs-194-294-merging-llms/scripts/../.venv/bin/python
+model_merging package found: /Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/__init__.py
+All PyTorch model weights were used when initializing TFGPT2ForSequenceClassification.
+
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+I1114 12:52:10.682105 8426020992 compute_fisher.py:38] Model loaded
+I1114 12:52:10.686548 8426020992 dataset_info.py:578] Load dataset info from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+I1114 12:52:10.692425 8426020992 dataset_builder.py:528] Reusing dataset glue (/Users/briancruz/tensorflow_datasets/glue/rte/2.0.0)
+I1114 12:52:10.723219 8426020992 logging_logger.py:49] Constructing tf.data.Dataset glue for split train, from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:520: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
+  warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
+I1114 12:52:10.805981 8426020992 compute_fisher.py:47] Dataset loaded
+I1114 12:52:10.806051 8426020992 compute_fisher.py:49] Starting Fisher computation
+I1114 12:58:45.662863 8426020992 compute_fisher.py:52] Fisher computed. Saving to file...
+I1114 12:58:45.678156 8426020992 compute_fisher.py:55] Fisher saved to file
+All PyTorch model weights were used when initializing TFGPT2ForSequenceClassification.
+
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+I1114 12:58:55.795588 8426020992 compute_fisher.py:38] Model loaded
+I1114 12:58:55.802767 8426020992 dataset_info.py:578] Load dataset info from /Users/briancruz/tensorflow_datasets/glue/mnli/2.0.0
+I1114 12:58:55.810140 8426020992 dataset_builder.py:528] Reusing dataset glue (/Users/briancruz/tensorflow_datasets/glue/mnli/2.0.0)
+I1114 12:58:55.849353 8426020992 logging_logger.py:49] Constructing tf.data.Dataset glue for split train, from /Users/briancruz/tensorflow_datasets/glue/mnli/2.0.0
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:221: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
+  warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
+I1114 12:58:55.985703 8426020992 compute_fisher.py:47] Dataset loaded
+I1114 12:58:55.985790 8426020992 compute_fisher.py:49] Starting Fisher computation
+2023-11-14 13:09:12.332055: W tensorflow/core/kernels/data/cache_dataset_ops.cc:854] The calling iterator did not fully read the dataset being cached. In order to avoid unexpected truncation of the dataset, the partially cached contents of the dataset  will be discarded. This can happen if you have an input pipeline similar to `dataset.cache().take(k).repeat()`. You should use `dataset.take(k).cache().repeat()` instead.
+I1114 13:09:12.480089 8426020992 compute_fisher.py:52] Fisher computed. Saving to file...
+I1114 13:09:12.484229 8426020992 compute_fisher.py:55] Fisher saved to file
+All PyTorch model weights were used when initializing TFGPT2ForSequenceClassification.
+
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+All PyTorch model weights were used when initializing TFGPT2ForSequenceClassification.
+
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+I1114 13:09:22.959973 8426020992 dataset_info.py:578] Load dataset info from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+I1114 13:09:22.962214 8426020992 dataset_builder.py:528] Reusing dataset glue (/Users/briancruz/tensorflow_datasets/glue/rte/2.0.0)
+I1114 13:09:22.987886 8426020992 logging_logger.py:49] Constructing tf.data.Dataset glue for split validation, from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:520: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
+  warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/evaluation.py:7: FutureWarning: load_metric is deprecated and will be removed in the next major version of datasets. Use 'evaluate.load' instead, from the new library 🤗 Evaluate: https://huggingface.co/docs/evaluate
+  return hfds.load_metric("glue", task)
+Merging coefficients: (1.0, 0.0)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.98, 0.020000000000000018)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.96, 0.040000000000000036)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.94, 0.06000000000000005)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.92, 0.07999999999999996)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.9, 0.09999999999999998)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.88, 0.12)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.86, 0.14)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.84, 0.16000000000000003)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.82, 0.18000000000000005)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.8, 0.19999999999999996)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.78, 0.21999999999999997)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.76, 0.24)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.74, 0.26)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.72, 0.28)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.7, 0.30000000000000004)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.68, 0.31999999999999995)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.66, 0.33999999999999997)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.64, 0.36)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.62, 0.38)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.6, 0.4)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.58, 0.42000000000000004)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.56, 0.43999999999999995)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.54, 0.45999999999999996)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.52, 0.48)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.5, 0.5)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.48, 0.52)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.46, 0.54)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.44, 0.56)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.42, 0.5800000000000001)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.4, 0.6)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.38, 0.62)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.36, 0.64)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.34, 0.6599999999999999)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.32, 0.6799999999999999)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.3, 0.7)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.28, 0.72)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.26, 0.74)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.24, 0.76)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.22, 0.78)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.2, 0.8)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.18, 0.8200000000000001)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.16, 0.84)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.14, 0.86)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.12, 0.88)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.1, 0.9)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.08, 0.92)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.06, 0.94)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.04, 0.96)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.02, 0.98)
+Scores:
+  accuracy: 0.296028880866426
+Merging coefficients: (0.0, 1.0)
+Scores:
+  accuracy: 0.296028880866426
+********************************************************************************
+ Best Merge
+********************************************************************************
+Merging coefficients: (1.0, 0.0)
+Scores:
+  accuracy: 0.296028880866426
