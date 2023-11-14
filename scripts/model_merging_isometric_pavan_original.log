@@ -1,0 +1,81 @@
+Using Python from /Users/briancruz/2023-fall-cs-194-294-merging-llms/scripts/../.venv/bin/python
+model_merging package found: /Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/__init__.py
+Some weights of the PyTorch model were not used when initializing the TF 2.0 model TFGPT2ForSequenceClassification: ['transformer.h.1.attn.masked_bias', 'transformer.h.0.attn.masked_bias', 'transformer.h.7.attn.masked_bias', 'transformer.h.6.attn.masked_bias', 'transformer.h.9.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.10.attn.masked_bias', 'transformer.h.8.attn.masked_bias', 'transformer.h.11.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.5.attn.masked_bias', 'transformer.h.2.attn.masked_bias']
+- This IS expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model trained on another task or with another architecture (e.g. initializing a TFBertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model that you expect to be exactly identical (e.g. initializing a TFBertForSequenceClassification model from a BertForSequenceClassification model).
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+Downloading (…)lve/main/config.json:   0%|          | 0.00/1.17k [00:00<?, ?B/s]Downloading (…)lve/main/config.json: 100%|██████████| 1.17k/1.17k [00:00<00:00, 494kB/s]
+Downloading pytorch_model.bin:   0%|          | 0.00/510M [00:00<?, ?B/s]Downloading pytorch_model.bin:   2%|▏         | 10.5M/510M [00:03<02:30, 3.33MB/s]Downloading pytorch_model.bin:   4%|▍         | 21.0M/510M [00:03<01:16, 6.43MB/s]Downloading pytorch_model.bin:   6%|▌         | 31.5M/510M [00:04<00:52, 9.14MB/s]Downloading pytorch_model.bin:   8%|▊         | 41.9M/510M [00:04<00:42, 11.0MB/s]Downloading pytorch_model.bin:  10%|█         | 52.4M/510M [00:05<00:37, 12.3MB/s]Downloading pytorch_model.bin:  12%|█▏        | 62.9M/510M [00:06<00:32, 13.7MB/s]Downloading pytorch_model.bin:  14%|█▍        | 73.4M/510M [00:06<00:29, 14.7MB/s]Downloading pytorch_model.bin:  16%|█▋        | 83.9M/510M [00:07<00:28, 15.1MB/s]Downloading pytorch_model.bin:  18%|█▊        | 94.4M/510M [00:08<00:28, 14.6MB/s]Downloading pytorch_model.bin:  21%|██        | 105M/510M [00:08<00:24, 16.9MB/s] Downloading pytorch_model.bin:  23%|██▎       | 115M/510M [00:09<00:23, 16.8MB/s]Downloading pytorch_model.bin:  25%|██▍       | 126M/510M [00:09<00:20, 19.0MB/s]Downloading pytorch_model.bin:  27%|██▋       | 136M/510M [00:10<00:19, 19.2MB/s]Downloading pytorch_model.bin:  29%|██▉       | 147M/510M [00:10<00:18, 19.2MB/s]Downloading pytorch_model.bin:  31%|███       | 157M/510M [00:11<00:19, 17.7MB/s]Downloading pytorch_model.bin:  33%|███▎      | 168M/510M [00:11<00:18, 18.2MB/s]Downloading pytorch_model.bin:  35%|███▍      | 178M/510M [00:12<00:18, 17.9MB/s]Downloading pytorch_model.bin:  37%|███▋      | 189M/510M [00:13<00:19, 16.6MB/s]Downloading pytorch_model.bin:  39%|███▉      | 199M/510M [00:13<00:17, 17.5MB/s]Downloading pytorch_model.bin:  41%|████      | 210M/510M [00:14<00:16, 18.2MB/s]Downloading pytorch_model.bin:  43%|████▎     | 220M/510M [00:15<00:17, 16.7MB/s]Downloading pytorch_model.bin:  45%|████▌     | 231M/510M [00:15<00:16, 16.9MB/s]Downloading pytorch_model.bin:  47%|████▋     | 241M/510M [00:16<00:16, 16.1MB/s]Downloading pytorch_model.bin:  49%|████▉     | 252M/510M [00:17<00:17, 14.7MB/s]Downloading pytorch_model.bin:  51%|█████▏    | 262M/510M [00:18<00:20, 12.3MB/s]Downloading pytorch_model.bin:  53%|█████▎    | 273M/510M [00:19<00:17, 13.4MB/s]Downloading pytorch_model.bin:  55%|█████▌    | 283M/510M [00:19<00:15, 14.7MB/s]Downloading pytorch_model.bin:  58%|█████▊    | 294M/510M [00:20<00:14, 15.2MB/s]Downloading pytorch_model.bin:  60%|█████▉    | 304M/510M [00:20<00:11, 17.3MB/s]Downloading pytorch_model.bin:  62%|██████▏   | 315M/510M [00:21<00:11, 16.5MB/s]Downloading pytorch_model.bin:  64%|██████▎   | 325M/510M [00:21<00:10, 17.1MB/s]Downloading pytorch_model.bin:  66%|██████▌   | 336M/510M [00:22<00:10, 16.9MB/s]Downloading pytorch_model.bin:  68%|██████▊   | 346M/510M [00:23<00:09, 17.5MB/s]Downloading pytorch_model.bin:  70%|██████▉   | 357M/510M [00:23<00:08, 18.2MB/s]Downloading pytorch_model.bin:  72%|███████▏  | 367M/510M [00:24<00:07, 19.2MB/s]Downloading pytorch_model.bin:  74%|███████▍  | 377M/510M [00:24<00:06, 19.6MB/s]Downloading pytorch_model.bin:  76%|███████▌  | 388M/510M [00:25<00:06, 19.3MB/s]Downloading pytorch_model.bin:  78%|███████▊  | 398M/510M [00:25<00:06, 18.6MB/s]Downloading pytorch_model.bin:  80%|████████  | 409M/510M [00:26<00:05, 18.2MB/s]Downloading pytorch_model.bin:  82%|████████▏ | 419M/510M [00:26<00:04, 19.0MB/s]Downloading pytorch_model.bin:  84%|████████▍ | 430M/510M [00:27<00:04, 16.6MB/s]Downloading pytorch_model.bin:  86%|████████▋ | 440M/510M [00:28<00:03, 17.6MB/s]Downloading pytorch_model.bin:  88%|████████▊ | 451M/510M [00:28<00:03, 18.5MB/s]Downloading pytorch_model.bin:  90%|█████████ | 461M/510M [00:29<00:02, 19.4MB/s]Downloading pytorch_model.bin:  92%|█████████▏| 472M/510M [00:29<00:02, 19.0MB/s]Downloading pytorch_model.bin:  95%|█████████▍| 482M/510M [00:30<00:01, 18.7MB/s]Downloading pytorch_model.bin:  97%|█████████▋| 493M/510M [00:31<00:01, 13.3MB/s]Downloading pytorch_model.bin:  99%|█████████▊| 503M/510M [00:32<00:00, 13.8MB/s]Downloading pytorch_model.bin: 100%|██████████| 510M/510M [00:32<00:00, 15.1MB/s]Downloading pytorch_model.bin: 100%|██████████| 510M/510M [00:32<00:00, 15.6MB/s]
+Some weights of the PyTorch model were not used when initializing the TF 2.0 model TFGPT2ForSequenceClassification: ['transformer.h.1.attn.masked_bias', 'transformer.h.0.attn.masked_bias', 'transformer.h.7.attn.masked_bias', 'transformer.h.6.attn.masked_bias', 'transformer.h.9.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.10.attn.masked_bias', 'transformer.h.8.attn.masked_bias', 'transformer.h.11.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.5.attn.masked_bias', 'transformer.h.2.attn.masked_bias']
+- This IS expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model trained on another task or with another architecture (e.g. initializing a TFBertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing TFGPT2ForSequenceClassification from a PyTorch model that you expect to be exactly identical (e.g. initializing a TFBertForSequenceClassification model from a BertForSequenceClassification model).
+All the weights of TFGPT2ForSequenceClassification were initialized from the PyTorch model.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFGPT2ForSequenceClassification for predictions without further training.
+I1114 13:25:40.764422 8426020992 dataset_info.py:578] Load dataset info from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+I1114 13:25:40.766636 8426020992 dataset_builder.py:528] Reusing dataset glue (/Users/briancruz/tensorflow_datasets/glue/rte/2.0.0)
+I1114 13:25:40.793298 8426020992 logging_logger.py:49] Constructing tf.data.Dataset glue for split validation, from /Users/briancruz/tensorflow_datasets/glue/rte/2.0.0
+/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:520: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
+  warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
+Traceback (most recent call last):
+  File "./scripts/merge_and_evaluate.py", line 117, in <module>
+    app.run(main)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/absl/app.py", line 308, in run
+    _run_main(main, args)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/absl/app.py", line 254, in _run_main
+    sys.exit(main(argv))
+  File "./scripts/merge_and_evaluate.py", line 86, in main
+    ds = data.load_glue_dataset(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/data.py", line 120, in load_glue_dataset
+    ds = _convert_dataset_to_features(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/data.py", line 113, in _convert_dataset_to_features
+    dataset = dataset.map(pad_fn)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/dataset_ops.py", line 2278, in map
+    return map_op._map_v2(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/map_op.py", line 37, in _map_v2
+    return _MapDataset(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/map_op.py", line 107, in __init__
+    self._map_func = structured_function.StructuredFunctionWrapper(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/structured_function.py", line 272, in __init__
+    self._function = fn_factory()
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 1189, in get_concrete_function
+    concrete = self._get_concrete_function_garbage_collected(*args, **kwargs)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 1169, in _get_concrete_function_garbage_collected
+    self._initialize(args, kwargs, add_initializers_to=initializers)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 694, in _initialize
+    self._variable_creation_fn    # pylint: disable=protected-access
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compiler.py", line 176, in _get_concrete_function_internal_garbage_collected
+    concrete_function, _ = self._maybe_define_concrete_function(args, kwargs)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compiler.py", line 171, in _maybe_define_concrete_function
+    return self._maybe_define_function(args, kwargs)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compiler.py", line 398, in _maybe_define_function
+    concrete_function = self._create_concrete_function(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compiler.py", line 305, in _create_concrete_function
+    func_graph_module.func_graph_from_py_func(
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/framework/func_graph.py", line 1055, in func_graph_from_py_func
+    func_outputs = python_func(*func_args, **func_kwargs)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 597, in wrapped_fn
+    out = weak_wrapped_fn().__wrapped__(*args, **kwds)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/structured_function.py", line 238, in wrapped_fn
+    ret = wrapper_helper(*args)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/data/ops/structured_function.py", line 168, in wrapper_helper
+    ret = autograph.tf_convert(self._func, ag_ctx)(*nested_args)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/autograph/impl/api.py", line 693, in wrapper
+    raise e.ag_error_metadata.to_exception(e)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/autograph/impl/api.py", line 690, in wrapper
+    return converted_call(f, args, kwargs, options=options)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/autograph/impl/api.py", line 439, in converted_call
+    result = converted_f(*effective_args, **kwargs)
+  File "/var/folders/5s/r3p544z57kxbmgkzvz_jv1gw0000gn/T/__autograph_generated_filed_97xf0u.py", line 14, in tf__pad_fn
+    input_ids = ag__.converted_call(ag__.ld(tf).concat, ([ag__.ld(input_ids), (ag__.ld(pad_token) * ag__.converted_call(ag__.ld(tf).ones, (ag__.ld(padding_length),), dict(dtype=ag__.ld(tf).int32), fscope))],), dict(axis=(- 1)), fscope)
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/tensorflow/python/framework/tensor_util.py", line 505, in make_tensor_proto
+    raise ValueError("None values not supported.")
+ValueError: in user code:
+
+    File "/Users/briancruz/2023-fall-cs-194-294-merging-llms/model_merging/model_merging/data.py", line 94, in pad_fn  *
+        input_ids = tf.concat(
+
+    ValueError: None values not supported.
+
