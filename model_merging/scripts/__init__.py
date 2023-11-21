@@ -68,9 +68,9 @@ def generate_weighted_vector(input_vector1, input_vector2, output_length=None, w
 
 
 # Example usage
-vec1 = np.arange(1, 13)
-vec2 = np.arange(10, 241, 10)
-output_length = 16
+#vec1 = np.arange(1, 13)
+#vec2 = np.arange(10, 241, 10)
+#output_length = 16
 
-result_vector = generate_weighted_vector(vec1, vec2, output_length, alpha_blend=1.0, beta_choice=0.5)
-print("Result Vector:", result_vector)
+#result_vector = generate_weighted_vector(vec1, vec2, output_length, alpha_blend=1.0, beta_choice=0.5)
+#print("Result Vector:", result_vector)
