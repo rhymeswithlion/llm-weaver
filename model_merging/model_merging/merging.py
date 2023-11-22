@@ -43,6 +43,8 @@ def _merge_with_coeffs(
     normalization_constants=None,
 ):
     n_models = len(variables_to_merge)
+    print(n_models)
+    print(len(coefficients))
     assert len(coefficients) == n_models
 
     if fishers is None:
@@ -53,17 +55,29 @@ def _merge_with_coeffs(
     if normalization_constants is not None:
         assert len(normalization_constants) == n_models
         coefficients = [w / n for w, n in zip(coefficients, normalization_constants)]
-
+    # print(output_variables)
     for i, var in enumerate(output_variables):
         lhs, rhs = [], []
         for j, (mvars, coeff, fisher) in enumerate(
             zip(variables_to_merge, coefficients, fishers)
         ):
+            print("hey")
+            print(fisher)
             diag = fisher if isinstance(fisher, float) else fisher[i]
             if not favor_target_model or j == 0:
                 diag = tf.maximum(diag, fisher_floor)
             mvar = mvars[i]
             tmp = coeff * diag
+            print("ho")
+            print(coeff)
+            print(diag)
+            print("hi")
+            print(tmp)
+            print("hi")
+            print(mvar.shape)
+            print("hi")
+            print(tmp * mvar)
+            print("hi")
             lhs.append(tmp)
             rhs.append(tmp * mvar)
         rhs = tf.reduce_sum(rhs, axis=0)
@@ -93,15 +107,25 @@ def generate_merged_for_coeffs_set(
     # The first model in the list of mergeable models is the "target" model and
     # the rest are "donor" models.
     output_model = hf_util.clone_model(mergeable_models[0])
+    # print(output_model.summary())
     output_variables = hf_util.get_mergeable_variables(output_model)
+    print("Hi")
+    # print(output_variables)
 
     variables_to_merge = [hf_util.get_mergeable_variables(m) for m in mergeable_models]
-
-    # Make sure that all of the variable lists contain exactly the same number
-    # of variables.
+    print("de")
+    print(variables_to_merge)
+    print("kj")
+    # print(output_variables)
+    # # Make sure that all of the variable lists contain exactly the same number
+    # # of variables.
     assert len({len(output_variables)} | set(len(v) for v in variables_to_merge)) == 1
-
+    # # # print(set(len(v) for v in variables_to_merge))
+    # # # print({len(output_variables)})
+    # print("bye")
+    print(len(coefficients_set))
     for coefficients in coefficients_set:
+        print(coefficients)
         _merge_with_coeffs(
             output_variables,
             variables_to_merge,

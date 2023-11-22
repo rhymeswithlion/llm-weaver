@@ -1,4 +1,4 @@
-from .util import get_model_and_tokenizer
+from llm_weaver.util import get_model_and_tokenizer
 
 def _get_layer_to_weights_map(model):
     from collections import defaultdict
