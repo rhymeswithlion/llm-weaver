@@ -1,6 +1,7 @@
 """Code for computing and storing Fishers."""
 import tensorflow as tf
 from model_merging import hf_util
+from tqdm import tqdm
 
 
 def _batch_size(batch):
@@ -61,7 +62,8 @@ def compute_fisher_for_model(
     ]
 
     n_examples = 0
-    for batch, _ in dataset:
+    # Wrap the dataset iteration with tqdm for the progress bar
+    for batch, _ in tqdm(dataset, desc="Computing Fisher", unit="batch"):
         n_examples += _batch_size(batch)
         batch_fishers = _compute_exact_fisher_for_batch(
             batch, model, variables, expectation_wrt_logits=expectation_wrt_logits
