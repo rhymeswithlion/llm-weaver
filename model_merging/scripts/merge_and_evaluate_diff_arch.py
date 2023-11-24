@@ -29,12 +29,13 @@ flags.DEFINE_integer("n_examples", 4096, "")
 flags.DEFINE_integer("batch_size", 32, "")
 flags.DEFINE_integer("sequence_length", 128, "")
 
-flags.DEFINE_integer("n_coeffs", 51, "")
-flags.DEFINE_enum("coeff_mode", "grid", ["grid", "random"], "")
+# flags.DEFINE_integer("n_coeffs", 51, "")
+# flags.DEFINE_enum("coeff_mode", "grid", ["grid", "random"], "")
 
-flags.DEFINE_float("fisher_floor", 1e-6, "")
-flags.DEFINE_bool("favor_target_model", True, "")
-flags.DEFINE_bool("normalize_fishers", True, "")
+# flags.DEFINE_float("fisher_floor", 1e-6, "")
+# flags.DEFINE_bool("favor_target_model", True, "")
+# flags.DEFINE_bool("normalize_fishers", True, "")
+flags.DEFINE_integer("output_length", 12, "Number of layers in final model.")
 
 
 def load_models():
@@ -94,13 +95,20 @@ def main(_):
 
     metric = evaluation.load_metric_for_glue_task(FLAGS.glue_task)
 
+    # The following is a sample config for the layer merging.
+    # In the future, we should try many combinations of these parameters.
+    sample_config = {'alpha_blend': 0.5,
+                     'beta_choice': 0.5,
+                     'loc_spread': 1.0,
+                     'output_length': 12}
+
+    # Need to decide what to do about embeddings and classification head.
     layer_config = sample_layers.generate_layer_config(
-        models,
         fishers,
-        FLAGS.fisher_floor,
-        FLAGS.favor_target_model,
-        FLAGS.normalize_fishers
+        sample_config
     )
+
+    # Haven't gone past here yet.
 
     coefficients_set = get_coeffs_set()
 
