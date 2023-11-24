@@ -27,7 +27,7 @@ def load_models_v2(model_strs=['textattack/roberta-base-RTE']):
             tokenizer = AutoTokenizer.from_pretrained(model_str)
     return models, tokenizer
 
-def load_fishers_v2(fisher_dirs=['./fisher_coefficients/rte_fisher.h5']):
+def load_fishers_v2(fisher_dirs=['./fisher_coeffs_roberta_rte_mnli/rte_fisher.h5']):
     fishers = []
     for fisher_str in fisher_dirs:
         fisher_str = os.path.expanduser(fisher_str)
@@ -37,11 +37,12 @@ def load_fishers_v2(fisher_dirs=['./fisher_coefficients/rte_fisher.h5']):
 
 
 def print_fishers(fisher_mat):
+    n = len(fisher_mat) // 16
     # Initialize an array to store the results
-    results = np.zeros((12, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
+    results = np.zeros((n, 3))  # 12 layers, 3 values per layer (average, sum, proportion)
 
     # Calculate the sum and average for each of the 12 layers
-    for i in range(len(fisher_mat) // 16):
+    for i in range(n):
         layer_matrices = fisher_mat[i * 16:(i + 1) * 16]  # Get the matrices for each layer
         layer_sum = sum(np.sum(matrix.numpy()) for matrix in layer_matrices)
         layer_avg = layer_sum / sum(matrix.numpy().size for matrix in layer_matrices)
@@ -57,17 +58,17 @@ def print_fishers(fisher_mat):
 
     # Print the results
     print('Percent of total Fisher information for each layer:')
-    for i in range(12):
+    for i in range(n):
         print(f'Layer {i + 1}: {results[i, 2] * 100:.2f}%')
 
     print('Total Fisher information for each layer:')
-    for i in range(12):
+    for i in range(n):
         print(f'Layer {i + 1}: {results[i, 1]:.2f}')
 
 
 # There are 197 weight matrices in the model. The first 192 are the weights of the 12 layers of the model.
 # The next 5 are the weights of embeddings.
-rte_fisher, mnli_fisher = load_fishers_v2(['./fisher_coefficients/rte_fisher.h5', './fisher_coefficients/mnli_fisher.h5'])
+base_fisher, large_fisher = load_fishers_v2(['./fisher_coeffs_roberta_rte_mnli/mnli_fisher.h5', './fisher_coeffs_roberta_rte_mnli/large_rte_fisher.h5'])
 
 # Get the trained model and tokenizer
 rte_model, rte_tokenizer = load_models_v2()
@@ -87,11 +88,15 @@ for i in range(16):
     print(rte_model_roberta_encoder.trainable_weights[i].name)
 
 # Corresponding fisher information
-for i in range(16):
-    print(rte_fisher[i].name)
+for i in range(17):
+    print(base_fisher[i].name)
 
-print_fishers(rte_fisher)
-print_fishers(mnli_fisher)
+for i in range(17):
+    print(large_fisher[i].name)
+
+
+print_fishers(base_fisher)
+print_fishers(large_fisher)
 
 # These are the embedding weights
 for i in range(193, 197):
