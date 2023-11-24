@@ -15,3 +15,4 @@ gpt2-finetuned-rte/
 
 # /model_merging/fisher*
 data/
+cache/
