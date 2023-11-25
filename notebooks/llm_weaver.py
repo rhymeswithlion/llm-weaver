@@ -27,9 +27,27 @@ def evaluate_model(model, dataset: tf.data.Dataset, metric):
     return metric.compute()
 
 
+def get_score_from_named_model(
+    model_id, split, n_examples, max_length=128, batch_size=64
+):
+    model, tokenizer = get_model_and_tokenizer(model_id)
+    task = normalize_glue_task_name(model_id)
+    return get_score_from_model(
+        model=model,
+        tokenizer=tokenizer,
+        task=task,
+        split=split,
+        n_examples=n_examples,
+        max_length=max_length,
+        batch_size=batch_size,
+    )
+
+
 def get_score_from_model(
     model, tokenizer, task, split, n_examples, max_length=128, batch_size=64
 ):
+    task = normalize_glue_task_name(task)
+
     ds = data.load_glue_dataset(
         task=task,
         split=split,
@@ -37,7 +55,8 @@ def get_score_from_model(
         max_length=max_length,
     )
     ds = ds.take(n_examples).cache().batch(batch_size)
-    metric = evaluation.load_metric_for_glue_task(task)
+    # load_metric_for_glue_task doesn't like the "-" in the task name, so we remove it
+    metric = evaluation.load_metric_for_glue_task(task.replace("-", ""))
     score = evaluate_model(model, ds, metric)
     return score
 
@@ -243,13 +262,16 @@ def weave_models(
         print(f"Loading {source_model_name}")
         source_models[source_model_name] = get_model(source_model_name)
 
-    for layer_assignment in layer_assignments:
+    # Ensure that there is a layer assignment for all the target layers
+    assert len(layer_assignments) == blank_model_config["num_hidden_layers"]
+
+    for target_layer_number, layer_assignment in enumerate(layer_assignments):
         if layer_assignment["type"] == "SingleLayer":
             assign_weights_from_one_layer_to_another(
                 source_model=source_models[layer_assignment["params"]["donor"]],
                 target_model=target_model,
                 source_layer_number=layer_assignment["params"]["hidden_layer_number"],
-                target_layer_number=layer_assignment["params"]["hidden_layer_number"],
+                target_layer_number=target_layer_number,
             )
         else:
             raise NotImplementedError(
@@ -343,12 +365,50 @@ def weave_models(
     return target_model
 
 
+def normalize_glue_task_name(task):
+    VALID_TASK_NAMES = [
+        "cola",
+        "mnli",
+        # "mnli-mm",
+        "mrpc",
+        "sst-2",
+        "sts-b",
+        "qqp",
+        "qnli",
+        "rte",
+        "wnli",
+    ]
+    for valid_name in VALID_TASK_NAMES:
+        if valid_name in task.lower():
+            return valid_name
+        if valid_name.replace("-", "") in task.lower().replace("-", ""):
+            return valid_name
+    print(f"WARNING: Could not normalize task name: {task}")
+    return task
+
+
 def test_weaver(original_model_id):
-    roberta_base_rte_weaving_config = {
-        "glue_task": "rte",
+    blank_model_config = get_model_config(original_model_id)
+
+    # fine tuning task is one of:
+    # glue_processors = {
+    #     "cola": ColaProcessor,
+    #     "mnli": MnliProcessor,
+    #     "mnli-mm": MnliMismatchedProcessor,
+    #     "mrpc": MrpcProcessor,
+    #     "sst-2": Sst2Processor,
+    #     "sts-b": StsbProcessor,
+    #     "qqp": QqpProcessor,
+    #     "qnli": QnliProcessor,
+    #     "rte": RteProcessor,
+    #     "wnli": WnliProcessor,
+    # }
+    task = normalize_glue_task_name(original_model_id)
+    weaved_config = {
+        "glue_task": task,
         "tokenizer_model_id": original_model_id,
         # The task (i.e. the classification head output size should match the task at hand)
-        "blank_model_config": get_model_config(original_model_id),
+        "blank_model_config": blank_model_config,
         # Layer assignments
         "layer_assignments": [
             {
@@ -360,7 +420,7 @@ def test_weaver(original_model_id):
                     "hidden_layer_number": i,
                 },
             }
-            for i in range(12)
+            for i in range(blank_model_config["num_hidden_layers"])
         ],
         # The head (i.e. the classification head should match the task at hand)
         # THESE ARE DIFFERENT BETWEEN RTE AND MNLI
@@ -380,8 +440,8 @@ def test_weaver(original_model_id):
         },
     }
 
-    roberta_base_rte_weaving_config_score = calculate_score_from_weaving_config(
-        roberta_base_rte_weaving_config,
+    weaved_score = calculate_score_from_weaving_config(
+        weaved_config,
         n_examples=100,
         split="validation",
     )
@@ -389,20 +449,15 @@ def test_weaver(original_model_id):
     original_score = get_score_from_model(
         model=get_model(original_model_id),
         tokenizer=get_tokenizer(original_model_id),
-        task="rte",
+        task=task,
         split="validation",
         n_examples=100,
     )
 
     print(f"Original score ({original_model_id}):", original_score)
-    print(f"Weaved score ({original_model_id}):", roberta_base_rte_weaving_config_score)
+    print(f"Weaved score ({original_model_id}):", weaved_score)
 
-    assert (
-        abs(
-            roberta_base_rte_weaving_config_score["accuracy"]
-            - original_score["accuracy"]
-        )
-        < 1e-3
-    )
+    if "accuracy" in original_score and "accuracy" in weaved_score:
+        assert abs(weaved_score["accuracy"] - original_score["accuracy"]) < 1e-3
 
-    return original_score, roberta_base_rte_weaving_config_score
+    return original_score, weaved_score
