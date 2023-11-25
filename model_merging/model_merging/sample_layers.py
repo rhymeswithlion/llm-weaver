@@ -102,8 +102,8 @@ def generate_weighted_vector(input_vectors, weight_vectors=None, sampling_config
 
     result = []
     for i in range(sampling_config['output_length']):
-        index1 = int((n_1 - 1) * (i / sampling_config['output_length']))
-        index2 = int((n_2 - 1) * (i / sampling_config['output_length']))
+        index1 = int((n_1 - 1) * (i / (sampling_config['output_length'] - 1)))
+        index2 = int((n_2 - 1) * (i / (sampling_config['output_length'] - 1)))
 
         value1 = sample_from_vector(input_vector1, weight1, index1, sampling_config)
         value2 = sample_from_vector(input_vector2, weight2, index2, sampling_config)
