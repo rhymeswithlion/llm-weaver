@@ -39,7 +39,7 @@ def generate_fisher_distributions(fisher_matrices):
     return fisher_dists
 
 
-def sample_from_vector(vector, weight_vec, center, sampling_config):
+def sample_from_vector(vector, weight_vec, center, sampling_config, rng=None):
     """
     Selects a single element from a given vector based on a combination of location-based
     and provided weights.
@@ -67,7 +67,10 @@ def sample_from_vector(vector, weight_vec, center, sampling_config):
     loc_probabilities /= (
         loc_probabilities.sum()
     )  # Normalize to make it a probability distribution
-    return np.random.choice(
+
+    if rng is None:
+        rng = np.random.default_rng(seed=42)
+    return rng.choice(
         vector,
         p=sampling_config["alpha_blend"] * loc_probabilities
         + (1 - sampling_config["alpha_blend"]) * weight_vec,
@@ -75,7 +78,7 @@ def sample_from_vector(vector, weight_vec, center, sampling_config):
 
 
 def generate_weighted_vector(
-    input_vectors, weight_vectors=None, sampling_config=None, minus_one=True, seed=42
+    input_vectors, weight_vectors=None, sampling_config=None, minus_one=True, rng=None
 ):
     """
     Generates a new vector of integers by selectively sampling from two input vectors.
@@ -106,7 +109,8 @@ def generate_weighted_vector(
     weight1 = weight_vectors[0] if weight_vectors is not None else np.ones(n_1) / n_1
     weight2 = weight_vectors[1] if weight_vectors is not None else np.ones(n_2) / n_2
 
-    rng = np.random.default_rng(seed=seed)
+    if rng is None:
+        rng = np.random.default_rng(seed=42)
 
     result = []
     for i in range(sampling_config["output_length"]):
@@ -117,8 +121,12 @@ def generate_weighted_vector(
             index1 = int((float(n_1) * (i / sampling_config["output_length"])))
             index2 = int((float(n_2) * (i / sampling_config["output_length"])))
 
-        value1 = sample_from_vector(input_vector1, weight1, index1, sampling_config)
-        value2 = sample_from_vector(input_vector2, weight2, index2, sampling_config)
+        value1 = sample_from_vector(
+            input_vector1, weight1, index1, sampling_config, rng=rng
+        )
+        value2 = sample_from_vector(
+            input_vector2, weight2, index2, sampling_config, rng=rng
+        )
 
         result.append(
             rng.choice(
