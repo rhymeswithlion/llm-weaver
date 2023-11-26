@@ -169,7 +169,7 @@ def generate_layer_config(fishers, sampling_config=None, **kwargs):
     for i in range(len(fisher_dists)):
         layer_i = []
         n_i = len(fisher_dists[i])  # // 16
-        print(f"Model {i} has {n_i} layers.")
+        # print(f"Model {i} has {n_i} layers.")
         for j in range(n_i):
             layer_i.append(f"model_{i}_layer_{j}")
         layer_indices.append(layer_i)
