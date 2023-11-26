@@ -1,0 +1,13 @@
+task,classification_head_model,layers_models,split,n_examples,accuracy
+rte,textattack/roberta-base-RTE,['textattack/roberta-base-RTE'],validation,256,0.7265625
+rte,textattack/roberta-base-RTE,['textattack/roberta-base-MNLI'],validation,256,0.515625
+mnli,textattack/roberta-base-MNLI,['textattack/roberta-base-RTE'],validation,256,0.26171875
+mnli,textattack/roberta-base-MNLI,['textattack/roberta-base-MNLI'],validation,256,0.265625
+rte,howey/roberta-large-rte,['howey/roberta-large-rte'],validation,256,0.64453125
+rte,howey/roberta-large-rte,['howey/roberta-large-mnli'],validation,256,0.23828125
+mnli,howey/roberta-large-mnli,['howey/roberta-large-rte'],validation,256,0.390625
+mnli,howey/roberta-large-mnli,['howey/roberta-large-mnli'],validation,256,0.70703125
+rte,JeremiahZ/roberta-base-rte,['JeremiahZ/roberta-base-rte'],validation,256,0.62109375
+rte,JeremiahZ/roberta-base-rte,['JeremiahZ/roberta-base-mnli'],validation,256,0.74609375
+mnli,JeremiahZ/roberta-base-mnli,['JeremiahZ/roberta-base-rte'],validation,256,0.2890625
+mnli,JeremiahZ/roberta-base-mnli,['JeremiahZ/roberta-base-mnli'],validation,256,0.85546875
