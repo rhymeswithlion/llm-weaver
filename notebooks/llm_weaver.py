@@ -654,6 +654,7 @@ def test_weaver(original_model_id):
     print(f"Fisher weaved score ({original_model_id}):", fisher_weaved_score)
 
     scores = [original_score, weaved_score, linear_combo_weaved_score, fisher_weaved_score]
+    configs = [None, weaved_config, linear_combo_weaved_config, fisher_weaved_config]
 
     if all("accuracy" in score for score in scores):
         # assert all accuracy scores are the same
@@ -662,4 +663,4 @@ def test_weaver(original_model_id):
             for score in scores
         )
 
-    return scores
+    return scores, configs
