@@ -218,12 +218,43 @@ def assign_weights_from_one_layer_to_another(
 
     # Make sure that all the shapes match
     for weight_name, weight_object in source_layer.items():
-        assert weight_object.shape == target_layer[weight_name].shape
+        assert weight_object.shape == target_layer[weight_name].shape, (
+            weight_name,
+            weight_object.shape,
+            target_layer[weight_name].shape,
+        )
 
     # Assign weights from one layer to another
     for weight_name, weight_object in source_layer.items():
         target_layer[weight_name].assign(weight_object.numpy())
 
+def add_weights_from_one_layer_to_another(
+    source_model, target_model, source_layer_number, target_layer_number, alpha=1.0, beta=1.0
+):
+    # This part is recalculated often, but it's fast. In the future we could
+    # cache it in a class as a cached property, but we'll leave it here for now.
+    target_model_layer_to_weights_map = _get_layer_to_weights_map(target_model)
+    source_model_layer_to_weights_map = _get_layer_to_weights_map(source_model)
+
+    # Get the layer objects
+    source_layer = source_model_layer_to_weights_map[source_layer_number]
+    target_layer = target_model_layer_to_weights_map[target_layer_number]
+
+    # Make sure that all the suffixes match
+    assert set(source_layer.keys()) == set(target_layer.keys())
+
+    # Make sure that all the shapes match
+    for weight_name, weight_object in source_layer.items():
+        assert weight_object.shape == target_layer[weight_name].shape, (
+            weight_name,
+            weight_object.shape,
+            target_layer[weight_name].shape,
+        )
+
+    # Assign weights from one layer to another
+    for weight_name, weight_object in source_layer.items():
+        result = alpha * weight_object.numpy() + beta * target_layer[weight_name].numpy()
+        target_layer[weight_name].assign(result)
 
 # For each of the variables in the model, return the mean weights squared
 def get_mean_weights_squared(model):
@@ -245,12 +276,19 @@ def weave_models(
 
     for name, quantity in get_mean_weights_squared(target_model).items():
         if quantity > 1e-12:
-            print(f"WARNING: {name} is not zero ({quantity})")
+            raise ValueError(f"blank model not zeroed properly. {name} is not zero ({quantity})")
 
     # We gather all the names of the donor models we need to load
     source_model_names = set(
         layer_assignment["params"]["donor"] for layer_assignment in layer_assignments
+        if layer_assignment["type"] == "SingleLayer"
     )
+    source_model_names.update(
+        donor_configs["donor"] for layer_assignment in layer_assignments
+        if layer_assignment["type"] == "IsotropicLinearCombination"
+        for donor_configs in layer_assignment["params"]["donors"]
+    )
+
     if classification_head is not None:
         source_model_names.add(classification_head["params"]["donor"])
     if embeddings is not None:
@@ -267,12 +305,22 @@ def weave_models(
 
     for target_layer_number, layer_assignment in enumerate(layer_assignments):
         if layer_assignment["type"] == "SingleLayer":
-            assign_weights_from_one_layer_to_another(
+            add_weights_from_one_layer_to_another(
                 source_model=source_models[layer_assignment["params"]["donor"]],
                 target_model=target_model,
                 source_layer_number=layer_assignment["params"]["hidden_layer_number"],
                 target_layer_number=target_layer_number,
+                alpha=1.0, # 100% of the source model
             )
+        elif layer_assignment["type"] == "IsotropicLinearCombination":
+            for donor_config in layer_assignment["params"]["donors"]:
+                add_weights_from_one_layer_to_another(
+                    source_model=source_models[donor_config["donor"]],
+                    target_model=target_model,
+                    source_layer_number=donor_config["hidden_layer_number"],
+                    target_layer_number=target_layer_number,
+                    alpha=donor_config["weight"],
+                )
         else:
             raise NotImplementedError(
                 f"Unknown layer assignment type: {layer_assignment['type']}"
@@ -308,7 +356,12 @@ def weave_models(
                     classification_head["params"]["donor"]
                 ].classifier.weights[weight_idx]
 
-                assert target_weight.shape == source_weight.shape
+                assert target_weight.shape == source_weight.shape, (
+                    target_weight.name,
+                    target_weight.shape,
+                    source_weight.name,
+                    source_weight.shape,
+                )
                 assert (
                     target_weight.name.partition("/")[2]
                     == source_weight.name.partition("/")[2]
@@ -348,7 +401,12 @@ def weave_models(
                     embeddings["params"]["donor"]
                 ].roberta.embeddings.weights[weight_idx]
 
-                assert target_weight.shape == source_weight.shape
+                assert target_weight.shape == source_weight.shape, (
+                    target_weight.name,
+                    target_weight.shape,
+                    source_weight.name,
+                    source_weight.shape,
+                )
                 assert (
                     target_weight.name.partition("/")[2]
                     == source_weight.name.partition("/")[2]
@@ -440,6 +498,52 @@ def test_weaver(original_model_id):
         },
     }
 
+    linear_combo_weaved_config = {
+        "glue_task": task,
+        "tokenizer_model_id": original_model_id,
+        # The task (i.e. the classification head output size should match the task at hand)
+        "blank_model_config": blank_model_config,
+        # Layer assignments
+        "layer_assignments": [
+            {
+                "type": "IsotropicLinearCombination",
+                "params": {
+                    "donors": [
+                        {
+                            "donor": original_model_id,
+                            "hidden_layer_number": i,
+                            "weight": (0.1*inner_i + 0.1), # 0.1 + 0.2 + 0.3 + 0.4 = 1.0
+                        }
+                        for inner_i in range(4)
+                    ]
+                },
+            }
+            for i in range(blank_model_config["num_hidden_layers"])
+        ],
+        # The head (i.e. the classification head should match the task at hand)
+        # THESE ARE DIFFERENT BETWEEN RTE AND MNLI
+        "classification_head": {
+            "type": "SingleClassificationHead",
+            "params": {
+                "donor": original_model_id,
+            },
+        },
+        # The embeddings layer
+        # THESE ARE DIFFERENT BETWEEN RTE AND MNLI
+        "embeddings": {
+            "type": "SingleEmbeddings",
+            "params": {
+                "donor": original_model_id,
+            },
+        },
+    }
+    # print(linear_combo_weaved_config)
+    linear_combo_weaved_score = calculate_score_from_weaving_config(
+        linear_combo_weaved_config,
+        n_examples=100,
+        split="validation",
+    )
+
     weaved_score = calculate_score_from_weaving_config(
         weaved_config,
         n_examples=100,
@@ -456,8 +560,15 @@ def test_weaver(original_model_id):
 
     print(f"Original score ({original_model_id}):", original_score)
     print(f"Weaved score ({original_model_id}):", weaved_score)
+    print(f"Linear combo weaved score ({original_model_id}):", linear_combo_weaved_score)
 
-    if "accuracy" in original_score and "accuracy" in weaved_score:
-        assert abs(weaved_score["accuracy"] - original_score["accuracy"]) < 1e-3
+    scores = [original_score, weaved_score, linear_combo_weaved_score]
 
-    return original_score, weaved_score
+    if all("accuracy" in score for score in scores):
+        # assert all accuracy scores are the same
+        assert all(
+            abs(score["accuracy"] - original_score["accuracy"]) < 1e-3
+            for score in scores
+        )
+
+    return scores
