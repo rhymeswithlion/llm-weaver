@@ -229,7 +229,7 @@ def _get_layer_to_weights_map(model):
 #         target_layer[weight_name].assign(weight_object.numpy())
 
 def add_weights_from_one_layer_to_another(
-    source_model, target_model, source_layer_number, target_layer_number, alpha=1.0, beta=1.0, element_wise_multiplier_filename=None
+    source_model, target_model, source_layer_number, target_layer_number, alpha=1.0, beta=1.0, element_wise_multiplier_filename=None, element_wise_divider_map=None
 ):
     # This part is recalculated often, but it's fast. In the future we could
     # cache it in a class as a cached property, but we'll leave it here for now.
@@ -250,6 +250,7 @@ def add_weights_from_one_layer_to_another(
             weight_object.shape,
             target_layer[weight_name].shape,
         )
+    multipliers = {}
 
     # Assign weights from one layer to another
     for weight_name, weight_object in source_layer.items():
@@ -258,11 +259,24 @@ def add_weights_from_one_layer_to_another(
             # Gross hacky way to get the full variable name
             full_variable_name = f"tf_roberta_for_sequence_classification/roberta/encoder/layer_._{source_layer_number}/{weight_name}"
             element_wise_multiplier = get_variable_from_h5_file(element_wise_multiplier_filename, full_variable_name)
-            result = alpha * weight_object.numpy() * element_wise_multiplier.numpy() + beta * target_layer[weight_name].numpy()
+
+            alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
+            alpha_matrix *= element_wise_multiplier.numpy()
+            
         else:
-            result = alpha * weight_object.numpy() + beta * target_layer[weight_name].numpy()
+            alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
+        multipliers[weight_name] = alpha_matrix
+
+        if element_wise_divider_map is not None:
+            beta_matrix = tf.ones_like(weight_object.numpy())
+            beta_matrix /= element_wise_divider_map[weight_name]
+        else:
+            beta_matrix = beta * tf.ones_like(weight_object.numpy())
+
+        result = alpha_matrix * weight_object.numpy() + beta_matrix * target_layer[weight_name].numpy()
 
         target_layer[weight_name].assign(result)
+    return multipliers
 
 # For each of the variables in the model, return the mean weights squared
 def get_mean_weights_squared(model):
@@ -369,8 +383,9 @@ def weave_models(
                     alpha=donor_config["weight"],
                 )
         elif layer_assignment["type"] == "ElementWiseLinearCombination":
+            multipliers_map_list = []
             for donor_config in layer_assignment["params"]["donors"]:
-                add_weights_from_one_layer_to_another(
+                multipliers_map = add_weights_from_one_layer_to_another(
                     source_model=source_models[donor_config["donor"]],
                     target_model=target_model,
                     source_layer_number=donor_config["hidden_layer_number"],
@@ -378,6 +393,29 @@ def weave_models(
                     alpha=donor_config["weight"],
                     element_wise_multiplier_filename=donor_config["element_wise_multiplier_filename"],
                 )
+                multipliers_map_list.append(multipliers_map)
+            # if normalize is set
+            if layer_assignment["params"]["normalize"]:
+                # sum the multipliers
+                multipliers_sum = {}
+                for multipliers_map in multipliers_map_list:
+                    for key, value in multipliers_map.items():
+                        if key in multipliers_sum:
+                            multipliers_sum[key] += value
+                        else:
+                            multipliers_sum[key] = value
+                # Multiply the target layer by the reciprocal
+                add_weights_from_one_layer_to_another(
+                    source_model=target_model,
+                    target_model=target_model,
+                    source_layer_number=target_layer_number,
+                    target_layer_number=target_layer_number,
+                    alpha=0.0,
+                    beta=1.0,
+                    element_wise_divider_map=multipliers_sum,
+                )                
+
+                
         else:
             raise NotImplementedError(
                 f"Unknown layer assignment type: {layer_assignment['type']}"
@@ -600,7 +638,8 @@ def test_weaver(original_model_id):
                             "weight": -1.0,
                             "element_wise_multiplier_filename": f"../data/fisher_info/{original_model_id.replace('/', '_')}-fisher-info.h5",
                         },
-                    ]
+                    ],
+                    "normalize": True,
                 },
             }
             for i in range(blank_model_config["num_hidden_layers"])
