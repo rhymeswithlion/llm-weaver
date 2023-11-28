@@ -8,6 +8,7 @@ import model_merging.data as data
 import model_merging.evaluation as evaluation
 import model_merging.hdf5_util as hdf5_util
 
+
 def evaluate_model(model, dataset: tf.data.Dataset, metric):
     # Let's check again that all the weights are non-zero
     for name, quantity in get_mean_weights_squared(model).items():
@@ -128,17 +129,30 @@ def calculate_score_from_weaving_config(
     return score
 
 
+GET_MODELS_CACHE = {}
+
+
 def get_model(model_str):
     from transformers import TFRobertaForSequenceClassification
 
-    model = TFRobertaForSequenceClassification.from_pretrained(model_str, from_pt=True)
+    if model_str not in GET_MODELS_CACHE:
+        GET_MODELS_CACHE[
+            model_str
+        ] = TFRobertaForSequenceClassification.from_pretrained(model_str, from_pt=True)
+    model = GET_MODELS_CACHE[model_str]
     return model
+
+
+GET_TOKEIZERS_CACHE = {}
 
 
 def get_tokenizer(model_str):
     from transformers import AutoTokenizer
 
-    tokenizer = AutoTokenizer.from_pretrained(model_str)
+    if model_str not in GET_TOKEIZERS_CACHE:
+        GET_TOKEIZERS_CACHE[model_str] = AutoTokenizer.from_pretrained(model_str)
+    tokenizer = GET_TOKEIZERS_CACHE[model_str]
+
     return tokenizer
 
 
@@ -228,8 +242,16 @@ def _get_layer_to_weights_map(model):
 #     for weight_name, weight_object in source_layer.items():
 #         target_layer[weight_name].assign(weight_object.numpy())
 
+
 def add_weights_from_one_layer_to_another(
-    source_model, target_model, source_layer_number, target_layer_number, alpha=1.0, beta=1.0, element_wise_multiplier_filename=None, element_wise_divider_map=None
+    source_model,
+    target_model,
+    source_layer_number,
+    target_layer_number,
+    alpha=1.0,
+    beta=1.0,
+    element_wise_multiplier_filename=None,
+    element_wise_divider_map=None,
 ):
     # This part is recalculated often, but it's fast. In the future we could
     # cache it in a class as a cached property, but we'll leave it here for now.
@@ -258,11 +280,13 @@ def add_weights_from_one_layer_to_another(
         if element_wise_multiplier_filename is not None:
             # Gross hacky way to get the full variable name
             full_variable_name = f"tf_roberta_for_sequence_classification/roberta/encoder/layer_._{source_layer_number}/{weight_name}"
-            element_wise_multiplier = get_variable_from_h5_file(element_wise_multiplier_filename, full_variable_name)
+            element_wise_multiplier = get_variable_from_h5_file(
+                element_wise_multiplier_filename, full_variable_name
+            )
 
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
             alpha_matrix *= element_wise_multiplier.numpy()
-            
+
         else:
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
         multipliers[weight_name] = alpha_matrix
@@ -273,10 +297,14 @@ def add_weights_from_one_layer_to_another(
         else:
             beta_matrix = beta * tf.ones_like(weight_object.numpy())
 
-        result = alpha_matrix * weight_object.numpy() + beta_matrix * target_layer[weight_name].numpy()
+        result = (
+            alpha_matrix * weight_object.numpy()
+            + beta_matrix * target_layer[weight_name].numpy()
+        )
 
         target_layer[weight_name].assign(result)
     return multipliers
+
 
 # For each of the variables in the model, return the mean weights squared
 def get_mean_weights_squared(model):
@@ -284,6 +312,7 @@ def get_mean_weights_squared(model):
         weight.name: tf.reduce_mean(tf.square(weight)).numpy()
         for weight in model.weights
     }
+
 
 def get_canonical_variable_name(
     variable_name, base="tf_roberta_for_sequence_classification"
@@ -301,6 +330,7 @@ def get_canonical_variable_name(
         "roberta/encoder/layer_._10/output/dense/kernel"
     """
     import re
+
     # print("==")
     # print(f"before: {variable_name}")
     variable_name = re.sub(r"(^|(^.*/))" + base + r"(_\d+)?/", "", variable_name)
@@ -308,7 +338,9 @@ def get_canonical_variable_name(
     # print(f"after: {variable_name}")
     return variable_name
 
+
 VARIABLES_FROM_H5_FILE_CACHE = {}
+
 
 def get_variable_from_h5_file(h5_file, variable_name):
     """Returns a variable from an h5 file"""
@@ -316,13 +348,16 @@ def get_variable_from_h5_file(h5_file, variable_name):
     search_name = get_canonical_variable_name(variable_name)
 
     if h5_file not in VARIABLES_FROM_H5_FILE_CACHE:
-        VARIABLES_FROM_H5_FILE_CACHE[h5_file] = hdf5_util.load_variables_from_hdf5(h5_file)
+        VARIABLES_FROM_H5_FILE_CACHE[h5_file] = hdf5_util.load_variables_from_hdf5(
+            h5_file
+        )
     variables = VARIABLES_FROM_H5_FILE_CACHE[h5_file]
     for variable in variables:
         # print(get_canonical_variable_name(variable.name), search_name)
         if get_canonical_variable_name(variable.name) == search_name:
             return variable
     raise ValueError(f"Could not find variable {variable_name} in h5 file {h5_file}")
+
 
 def weave_models(
     blank_model_config,
@@ -336,19 +371,22 @@ def weave_models(
 
     for name, quantity in get_mean_weights_squared(target_model).items():
         if quantity > 1e-12:
-            raise ValueError(f"blank model not zeroed properly. {name} is not zero ({quantity})")
+            raise ValueError(
+                f"blank model not zeroed properly. {name} is not zero ({quantity})"
+            )
 
     # We gather all the names of the donor models we need to load
     source_model_names = set(
-        layer_assignment["params"]["donor"] for layer_assignment in layer_assignments
+        layer_assignment["params"]["donor"]
+        for layer_assignment in layer_assignments
         if layer_assignment["type"] == "SingleLayer"
     )
     source_model_names.update(
-        donor_configs["donor"] for layer_assignment in layer_assignments
+        donor_configs["donor"]
+        for layer_assignment in layer_assignments
         if layer_assignment["type"] == "IsotropicLinearCombination"
         for donor_configs in layer_assignment["params"]["donors"]
     )
-    
 
     if classification_head is not None:
         source_model_names.add(classification_head["params"]["donor"])
@@ -371,7 +409,7 @@ def weave_models(
                 target_model=target_model,
                 source_layer_number=layer_assignment["params"]["hidden_layer_number"],
                 target_layer_number=target_layer_number,
-                alpha=1.0, # 100% of the source model
+                alpha=1.0,  # 100% of the source model
             )
         elif layer_assignment["type"] == "IsotropicLinearCombination":
             for donor_config in layer_assignment["params"]["donors"]:
@@ -391,7 +429,9 @@ def weave_models(
                     source_layer_number=donor_config["hidden_layer_number"],
                     target_layer_number=target_layer_number,
                     alpha=donor_config["weight"],
-                    element_wise_multiplier_filename=donor_config["element_wise_multiplier_filename"],
+                    element_wise_multiplier_filename=donor_config[
+                        "element_wise_multiplier_filename"
+                    ],
                 )
                 multipliers_map_list.append(multipliers_map)
             # if normalize is set
@@ -413,9 +453,8 @@ def weave_models(
                     alpha=0.0,
                     beta=1.0,
                     element_wise_divider_map=multipliers_sum,
-                )                
+                )
 
-                
         else:
             raise NotImplementedError(
                 f"Unknown layer assignment type: {layer_assignment['type']}"
@@ -583,7 +622,9 @@ def test_weaver(original_model_id):
                         {
                             "donor": original_model_id,
                             "hidden_layer_number": i,
-                            "weight": (0.1*inner_i + 0.1), # 0.1 + 0.2 + 0.3 + 0.4 = 1.0
+                            "weight": (
+                                0.1 * inner_i + 0.1
+                            ),  # 0.1 + 0.2 + 0.3 + 0.4 = 1.0
                         }
                         for inner_i in range(4)
                     ]
@@ -623,7 +664,7 @@ def test_weaver(original_model_id):
                         {
                             "donor": original_model_id,
                             "hidden_layer_number": i,
-                            "weight": 1.0, 
+                            "weight": 1.0,
                             "element_wise_multiplier_filename": None,
                         },
                         {
@@ -666,7 +707,7 @@ def test_weaver(original_model_id):
         n_examples=100,
         split="validation",
     )
-    
+
     linear_combo_weaved_score = calculate_score_from_weaving_config(
         linear_combo_weaved_config,
         n_examples=100,
@@ -689,10 +730,17 @@ def test_weaver(original_model_id):
 
     print(f"Original score ({original_model_id}):", original_score)
     print(f"Weaved score ({original_model_id}):", weaved_score)
-    print(f"Linear combo weaved score ({original_model_id}):", linear_combo_weaved_score)
+    print(
+        f"Linear combo weaved score ({original_model_id}):", linear_combo_weaved_score
+    )
     print(f"Fisher weaved score ({original_model_id}):", fisher_weaved_score)
 
-    scores = [original_score, weaved_score, linear_combo_weaved_score, fisher_weaved_score]
+    scores = [
+        original_score,
+        weaved_score,
+        linear_combo_weaved_score,
+        fisher_weaved_score,
+    ]
     configs = [None, weaved_config, linear_combo_weaved_config, fisher_weaved_config]
 
     if all("accuracy" in score for score in scores):
