@@ -252,6 +252,7 @@ def add_weights_from_one_layer_to_another(
     beta=1.0,
     element_wise_multiplier_filename=None,
     element_wise_divider_map=None,
+    add_one_to_multiplier=True,
 ):
     # This part is recalculated often, but it's fast. In the future we could
     # cache it in a class as a cached property, but we'll leave it here for now.
@@ -285,7 +286,10 @@ def add_weights_from_one_layer_to_another(
             )
 
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
-            alpha_matrix *= element_wise_multiplier.numpy() + 1.0
+            if add_one_to_multiplier:
+                alpha_matrix *= element_wise_multiplier.numpy() + 1.0
+            else:
+                alpha_matrix *= element_wise_multiplier.numpy()
 
         else:
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
