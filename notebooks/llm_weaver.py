@@ -285,7 +285,7 @@ def add_weights_from_one_layer_to_another(
             )
 
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
-            alpha_matrix *= element_wise_multiplier.numpy()
+            alpha_matrix *= element_wise_multiplier.numpy() + 1.0
 
         else:
             alpha_matrix = alpha * tf.ones_like(weight_object.numpy())
@@ -385,6 +385,12 @@ def weave_models(
         donor_configs["donor"]
         for layer_assignment in layer_assignments
         if layer_assignment["type"] == "IsotropicLinearCombination"
+        for donor_configs in layer_assignment["params"]["donors"]
+    )
+    source_model_names.update(
+        donor_configs["donor"]
+        for layer_assignment in layer_assignments
+        if layer_assignment["type"] == "ElementWiseLinearCombination"
         for donor_configs in layer_assignment["params"]["donors"]
     )
 
