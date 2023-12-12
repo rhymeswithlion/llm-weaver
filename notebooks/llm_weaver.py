@@ -1,5 +1,9 @@
 import tensorflow as tf
-from transformers import AutoTokenizer, RobertaConfig
+from transformers import (
+    AutoTokenizer,
+    RobertaConfig,
+    TFAutoModelForSequenceClassification,
+)
 from transformers.models.roberta.modeling_tf_roberta import (
     TFRobertaForSequenceClassification,
 )
@@ -60,42 +64,6 @@ def get_score_from_model(
     metric = evaluation.load_metric_for_glue_task(task.replace("-", ""))
     score = evaluate_model(model, ds, metric)
     return score
-
-
-# Some tests we did
-# tokenizer = AutoTokenizer.from_pretrained("textattack/roberta-base-RTE")
-# get_score_from_model(
-#     # model=model,
-#     model=get_model("textattack/roberta-base-RTE"),
-#     tokenizer=tokenizer,
-#     task="rte",
-#     split="validation",
-#     n_examples=256,
-# )
-# {'accuracy': 0.7265625}
-# This has the same score as taking all the parts of roberta-base-RTE and putting them together using the weave_models function
-# calculate_score_from_weaving_config(weaving_configs[0])
-# {'accuracy': 0.7265625}
-
-# get_score_from_model(
-#     model=get_blank_model(get_model("textattack/roberta-base-RTE").config.to_dict()),
-#     tokenizer=tokenizer,
-#     task="rte",
-#     split="validation",
-#     n_examples=256,
-# )
-# All PyTorch model weights were used when initializing TFRobertaForSequenceClassification.
-
-# All the weights of TFRobertaForSequenceClassification were initialized from the PyTorch model.
-# If your task is similar to the task the model of the checkpoint was trained on, you can already use TFRobertaForSequenceClassification for predictions without further training.
-# /Users/briancruz/2023-fall-cs-194-294-merging-llms/.venv/lib/python3.8/site-packages/transformers/data/processors/glue.py:520: FutureWarning: This processor will be removed from the library soon, preprocessing should be handled with the 🤗 Datasets library. You can have a look at this example script for pointers: https://github.com/huggingface/transformers/blob/main/examples/pytorch/text-classification/run_glue.py
-#   warnings.warn(DEPRECATION_WARNING.format("processor"), FutureWarning)
-# WARNING: All predictions are the same! Is your model broken? [0]
-# WARNING: All predictions are the same! Is your model broken? [0]
-# WARNING: All predictions are the same! Is your model broken? [0]
-
-
-# def calculate_score_from_config()
 
 
 def calculate_score_from_weaving_config(
@@ -181,11 +149,6 @@ def dict_overwrite(d1, d2):
     return d1
 
 
-# The functions we need for model weaving
-
-from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
-
-
 def get_model_and_tokenizer(identifier):
     tokenizer = AutoTokenizer.from_pretrained(identifier)
     model = TFAutoModelForSequenceClassification.from_pretrained(
@@ -213,34 +176,6 @@ def _get_layer_to_weights_map(model):
         layer_number: dict(weights)
         for layer_number, weights in layer_to_weights_map.items()
     }
-
-
-# def assign_weights_from_one_layer_to_another(
-#     source_model, target_model, source_layer_number, target_layer_number
-# ):
-#     # This part is recalculated often, but it's fast. In the future we could
-#     # cache it in a class as a cached property, but we'll leave it here for now.
-#     target_model_layer_to_weights_map = _get_layer_to_weights_map(target_model)
-#     source_model_layer_to_weights_map = _get_layer_to_weights_map(source_model)
-
-#     # Get the layer objects
-#     source_layer = source_model_layer_to_weights_map[source_layer_number]
-#     target_layer = target_model_layer_to_weights_map[target_layer_number]
-
-#     # Make sure that all the suffixes match
-#     assert set(source_layer.keys()) == set(target_layer.keys())
-
-#     # Make sure that all the shapes match
-#     for weight_name, weight_object in source_layer.items():
-#         assert weight_object.shape == target_layer[weight_name].shape, (
-#             weight_name,
-#             weight_object.shape,
-#             target_layer[weight_name].shape,
-#         )
-
-#     # Assign weights from one layer to another
-#     for weight_name, weight_object in source_layer.items():
-#         target_layer[weight_name].assign(weight_object.numpy())
 
 
 def add_weights_from_one_layer_to_another(
@@ -568,19 +503,6 @@ def normalize_glue_task_name(task):
 def test_weaver(original_model_id):
     blank_model_config = get_model_config(original_model_id)
 
-    # fine tuning task is one of:
-    # glue_processors = {
-    #     "cola": ColaProcessor,
-    #     "mnli": MnliProcessor,
-    #     "mnli-mm": MnliMismatchedProcessor,
-    #     "mrpc": MrpcProcessor,
-    #     "sst-2": Sst2Processor,
-    #     "sts-b": StsbProcessor,
-    #     "qqp": QqpProcessor,
-    #     "qnli": QnliProcessor,
-    #     "rte": RteProcessor,
-    #     "wnli": WnliProcessor,
-    # }
     task = normalize_glue_task_name(original_model_id)
     weaved_config = {
         "glue_task": task,
